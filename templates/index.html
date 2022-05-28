@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+  <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+  
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  
+  <title>URL Shortener</title>
+  <style>
+    *{
+      box-sizing: border-box;
+    }
+
+    body{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(
+      to left,
+      rgba(7,27,82,1) 0%,
+      rgba(200,128,128,1) 100%);
+    }
+    .container{
+      height: 360px ;
+      width: 700px;
+      background-color: aliceblue;
+      border-radius: 10px;
+    }
+    #link{
+      width: 100%;
+    }
+    .btn{
+      width: 100%;
+    }
+    .icons{
+      display: flex;
+      flex-direction: row;
+      font-size: 20px;
+      gap: 0.4rem;
+    }
+    label{
+      font-weight: 300;
+      font-size: medium;
+    }
+    .copy-text{
+      position: relative;
+      background: #fff;
+      border: 1px solid #ddd;
+      display: flex; 
+      border-radius: 10px;
+      }
+    .copy-text input.text{
+
+      font-size: 18px;
+      color: #555;
+      border: none;
+      outline: none;
+    }
+
+    .copy-text button{
+        padding: 10px;
+        background: #4070f4;
+        color:#fff;
+        font-size: 18px;
+        border: none;
+        outline: none;
+        margin-left: auto;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+    .copy-text button:active{
+        
+      background: #4070f4;
+       
+    }
+
+    .copy-text button:before{
+
+      content: "Copied!";
+      position: absolute;
+      top: -45px;
+      right: 0px;
+      background: #4070f4;
+      padding: 8px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      display: none;
+        
+
+    }
+    .copy-text button:after{
+      content: "";
+      position: absolute;
+      top: -20px;
+      right: 25px;
+      width: 10px;
+      height: 10px;
+      background: #4070f4;
+      transform: rotate(45deg);
+      display: none;
+
+    }
+
+    .copy-text.active button:before,
+    .copy-text.active button:after {
+      display: block;
+    }
+
+
+
+    @media only screen and (max-width:768px) {
+      body{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .container{
+        height: 370px;
+        width: fit-content;
+      }
+     
+    }
+    @media only screen and (max-width:386px) {
+      body{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .container{
+        height: 350px;
+        width:fit-content;
+      }
+     
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="mt-2">
+      URL Shortener
+    </h1>
+    <form id="post-form">      
+      {% csrf_token %}
+      <input class="form-control mt-5 " type="text" placeholder="Enter URL Here" id="link" name="link" required>
+
+      <button type="submit" class="btn btn-dark mt-2">Shorten</button>
+
+    </form>
+    
+    <div class="container2">
+      <div class="lead">
+        Click to Copy Link
+      </div>
+      <div class="copy-text">
+        <input type="text" class='text' id="result" disabled > &nbsp;
+        <button>
+          <i class='bx bx-copy bx-rotate-270'></i>
+        </button>
+      </div>
+    </div>
+  
+    <footer>
+      <div class="footer_container">
+        <div class='icons'>
+          <a href="https://twitter.com/Chiefo06653317?s=03"><i class='bx bxl-twitter' style='color:#0da8e4'></i></a>
+          <a href="https://www.linkedin.com/in/abdullahi-busari-o-473170218/"><i class='bx bxl-linkedin' style='color:#111314'  ></i></i></a>
+          <a href="https://github.com/abdullahiola"><i class="bx bxl-github" style='color:#111314'></i></a> 
+          <br>
+
+        </div>
+      
+        <label>
+          <i class='bx bx-copyright'><em>2022 Abdullahi</em></i>
+        </label>
+       
+      </div>
+      
+    </footer>
+  
+  </div>
+
+  <script type="text/javascript">
+    $(document).on('submit','#post-form',function(e){
+      e.preventDefault();
+
+      $.ajax({
+        type:'POST',
+        url:'/create',
+        data:{
+          link:$('#link').val(),
+          csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(data){
+          let res ='localhost:8000/'+data
+          $('#result').val(res)
+
+        }
+      })
+    })
+  </script>
+  <script>
+    let copyText = document.querySelector('.copy-text')
+    copyText.querySelector('button').addEventListener('click',function(){
+      navigator.clipboard.writeText(document.getElementById('result').value)
+      copyText.classList.add('active');
+      window.getSelection().removeAllRanges();
+      setTimeout(function(){
+        copyText.classList.remove('active')
+      },2500)
+    })
+  </script>   
+</body>
+</html>
